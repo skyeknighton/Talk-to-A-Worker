@@ -26,7 +26,7 @@ By UVW Campaign Staff
 - WASD: Move character
 - E: Interact with nearby coworkers
 - ESC: Pause game
-- SPACE: Skip dialogue
+- SPACE: Hide dialogue
 
 ## Development
 This game is built using Python and Pygame, focusing on creating an engaging narrative about workplace relationships and solidarity. 
