@@ -41,6 +41,8 @@ def load_sprite(filename, size=(32, 32)):
                 surface.fill(YELLOW)
             elif "boss" in filename:
                 surface.fill(RED)
+            elif "pause" in filename:
+                surface.fill((100, 100, 100, 128))  # Semi-transparent gray
             else:
                 surface.fill(GRAY)
             return surface
@@ -55,6 +57,8 @@ def load_sprite(filename, size=(32, 32)):
             surface.fill(YELLOW)
         elif "boss" in filename:
             surface.fill(RED)
+        elif "pause" in filename:
+            surface.fill((100, 100, 100, 128))  # Semi-transparent gray
         else:
             surface.fill(GRAY)
         return surface
@@ -212,6 +216,48 @@ class Boss(pygame.sprite.Sprite):
                 elif self.rect.x > SCREEN_WIDTH - self.rect.width:
                     self.rect.x = SCREEN_WIDTH - self.rect.width
 
+class RunningProtestor(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = load_sprite("protestor.png", (50, 50))  # Slightly smaller
+        self.rect = self.image.get_rect()
+        self.speed = 4
+        self.reset_position()
+        
+    def reset_position(self):
+        # Start from a random edge of the screen
+        side = random.choice(['top', 'bottom', 'left', 'right'])
+        if side == 'top':
+            self.rect.x = random.randint(0, SCREEN_WIDTH - self.rect.width)
+            self.rect.y = -self.rect.height
+            self.dx = random.uniform(-2, 2)
+            self.dy = self.speed
+        elif side == 'bottom':
+            self.rect.x = random.randint(0, SCREEN_WIDTH - self.rect.width)
+            self.rect.y = SCREEN_HEIGHT
+            self.dx = random.uniform(-2, 2)
+            self.dy = -self.speed
+        elif side == 'left':
+            self.rect.x = -self.rect.width
+            self.rect.y = random.randint(0, SCREEN_HEIGHT - self.rect.height)
+            self.dx = self.speed
+            self.dy = random.uniform(-2, 2)
+        else:  # right
+            self.rect.x = SCREEN_WIDTH
+            self.rect.y = random.randint(0, SCREEN_HEIGHT - self.rect.height)
+            self.dx = -self.speed
+            self.dy = random.uniform(-2, 2)
+    
+    def update(self):
+        # Move the protestor
+        self.rect.x += self.dx
+        self.rect.y += self.dy
+        
+        # Reset when off screen
+        if (self.rect.right < -50 or self.rect.left > SCREEN_WIDTH + 50 or 
+            self.rect.bottom < -50 or self.rect.top > SCREEN_HEIGHT + 50):
+            self.reset_position()
+
 class Game:
     def __init__(self):
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -221,10 +267,14 @@ class Game:
         # Load background
         self.background = load_sprite("background.png", (SCREEN_WIDTH, SCREEN_HEIGHT))
         
+        # Load pause screen
+        self.pause_screen = load_sprite("pause.png", (SCREEN_WIDTH, SCREEN_HEIGHT))
+        
         # Create sprite groups
         self.all_sprites = pygame.sprite.Group()
         self.coworkers = pygame.sprite.Group()
         self.bosses = pygame.sprite.Group()
+        self.running_protestors = pygame.sprite.Group()
         
         # Create player
         self.player = Player(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 100)
@@ -242,11 +292,21 @@ class Game:
         self.bosses.add(self.boss)
         self.all_sprites.add(self.boss)
         
+        # Create initial running protestors (inactive until all coworkers protest)
+        for _ in range(3):  # Create 3 running protestors
+            running_protestor = RunningProtestor()
+            self.running_protestors.add(running_protestor)
+            self.all_sprites.add(running_protestor)
+        
         # Game state
         self.running = True
         self.paused = False
         self.current_dialogue = None
         self.dialogue_font = pygame.font.Font(None, 32)
+        
+        # Pause screen elements
+        self.pause_font = pygame.font.Font(None, 48)
+        self.x_button_rect = pygame.Rect(SCREEN_WIDTH - 60, 20, 40, 40)
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -259,6 +319,10 @@ class Game:
                     self.try_interaction()
                 elif event.key == K_SPACE and self.current_dialogue:
                     self.current_dialogue = None
+            elif event.type == MOUSEBUTTONDOWN and self.paused:
+                # Check if X button was clicked
+                if self.x_button_rect.collidepoint(event.pos):
+                    self.paused = False
 
     def try_interaction(self):
         for coworker in self.coworkers:
@@ -269,7 +333,10 @@ class Game:
                 if coworker.trust_level >= 3:
                     coworker.convinced = True
                     self.player.convinced_workers += 1
-                    self.current_dialogue = f"{coworker.name} is now convinced! ({self.player.convinced_workers}/4 workers)"
+                    if self.player.convinced_workers == 4:
+                        self.current_dialogue = "Time for bargaining!"
+                    else:
+                        self.current_dialogue = f"{coworker.name} is now convinced! ({self.player.convinced_workers}/4 workers)"
                 else:
                     self.current_dialogue = f"{coworker.name}: {random.choice(coworker.dialogue)} ({coworker.trust_level}/3)"
                 break
@@ -295,6 +362,11 @@ class Game:
         for coworker in self.coworkers:
             coworker.update(self.boss, protesting_workers)
 
+        # Update running protestors (only when all 4 coworkers are protesting)
+        if protesting_count == 4:
+            for running_protestor in self.running_protestors:
+                running_protestor.update()
+
         # Update boss
         self.boss.update(protesting_count, self.player)
 
@@ -305,20 +377,7 @@ class Game:
             self.current_dialogue = "The boss is watching! Be careful!"
 
     def draw(self):
-        # Draw background
-        self.screen.blit(self.background, (0, 0))
-        
-        # Draw all sprites
-        self.all_sprites.draw(self.screen)
-        
-        # Draw dialogue if present
-        if self.current_dialogue:
-            text = self.dialogue_font.render(self.current_dialogue, True, BLACK)
-            text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 50))
-            pygame.draw.rect(self.screen, GRAY, text_rect.inflate(20, 20))
-            self.screen.blit(text, text_rect)
-        
-        # Draw stats
+        # Draw stats first (behind background)
         trust_text = self.dialogue_font.render(f"Convinced Workers: {self.player.convinced_workers}/4", True, BLACK)
         self.screen.blit(trust_text, (10, 10))
         
@@ -328,6 +387,61 @@ class Game:
         
         boss_speed_text = self.dialogue_font.render(f"Boss Speed: {self.boss.speed}", True, BLACK)
         self.screen.blit(boss_speed_text, (10, 70))
+        
+        # Draw background
+        self.screen.blit(self.background, (0, 0))
+        
+        # Separate sprites for proper layering
+        sprites_behind_boss = []
+        sprites_in_front = []
+        
+        # Sort sprites based on protesting status and position
+        for sprite in self.all_sprites:
+            if sprite == self.boss:
+                continue  # Boss will be drawn separately
+            
+            if hasattr(sprite, 'protesting') and sprite.protesting:
+                # Check if protesting worker is in front or behind boss
+                if sprite.rect.centery > self.boss.rect.centery:
+                    sprites_in_front.append(sprite)  # Bottom half - in front
+                else:
+                    sprites_behind_boss.append(sprite)  # Top half - behind
+            else:
+                sprites_in_front.append(sprite)  # Non-protesting sprites always in front
+        
+        # Draw sprites behind boss
+        for sprite in sprites_behind_boss:
+            self.screen.blit(sprite.image, sprite.rect)
+        
+        # Draw boss
+        self.screen.blit(self.boss.image, self.boss.rect)
+        
+        # Draw sprites in front of boss
+        for sprite in sprites_in_front:
+            self.screen.blit(sprite.image, sprite.rect)
+        
+        # Draw dialogue if present
+        if self.current_dialogue:
+            text = self.dialogue_font.render(self.current_dialogue, True, BLACK)
+            text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 50))
+            pygame.draw.rect(self.screen, GRAY, text_rect.inflate(20, 20))
+            self.screen.blit(text, text_rect)
+        
+        # Draw pause screen if paused
+        if self.paused:
+            # Draw "PAUSED" text first (behind the overlay)
+            pause_text = self.pause_font.render("PAUSED", True, BLACK)
+            pause_rect = pause_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+            self.screen.blit(pause_text, pause_rect)
+            
+            # Draw pause screen overlay
+            self.screen.blit(self.pause_screen, (0, 0))
+            
+            # Draw X button
+            pygame.draw.rect(self.screen, RED, self.x_button_rect)
+            x_text = self.pause_font.render("X", True, WHITE)
+            x_rect = x_text.get_rect(center=self.x_button_rect.center)
+            self.screen.blit(x_text, x_rect)
         
         pygame.display.flip()
 
