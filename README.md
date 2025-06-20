@@ -2,6 +2,8 @@
 
 A game about building connections and solidarity in the workplace. Navigate through your office environment, interact with coworkers, and build trust while avoiding the boss's watchful eye.
 
+By UVW Campaign Staff
+
 ## Features
 - Explore a dynamic office environment
 - Interact with coworkers to build relationships
