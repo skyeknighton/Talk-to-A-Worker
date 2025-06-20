@@ -29,4 +29,8 @@ By UVW Campaign Staff
 - SPACE: Hide dialogue
 
 ## Development
-This game is built using Python and Pygame, focusing on creating an engaging narrative about workplace relationships and solidarity. 
+This game is built using Python and Pygame, focusing on creating an engaging narrative about workplace relationships and solidarity.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
