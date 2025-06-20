@@ -86,6 +86,21 @@ class Player(pygame.sprite.Sprite):
         if not boss_blocking:
             self.rect.x = new_x
             self.rect.y = new_y
+        else:
+            # Bounce off the boss like rubber
+            # Calculate bounce direction based on collision side
+            if abs(self.rect.x - boss.rect.x) < abs(self.rect.y - boss.rect.y):
+                # Horizontal collision - bounce left or right
+                if self.rect.x < boss.rect.x:
+                    self.rect.x = boss.rect.x - self.rect.width - 5
+                else:
+                    self.rect.x = boss.rect.x + boss.rect.width + 5
+            else:
+                # Vertical collision - bounce up or down
+                if self.rect.y < boss.rect.y:
+                    self.rect.y = boss.rect.y - self.rect.height - 5
+                else:
+                    self.rect.y = boss.rect.y + boss.rect.height + 5
         
         # Keep player on screen
         self.rect.clamp_ip(pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT))
