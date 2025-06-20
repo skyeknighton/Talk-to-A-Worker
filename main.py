@@ -3,6 +3,7 @@ import sys
 from pygame.locals import *
 import math
 import os
+import random
 
 # Initialize Pygame
 pygame.init()
@@ -270,7 +271,7 @@ class Game:
                     self.player.convinced_workers += 1
                     self.current_dialogue = f"{coworker.name} is now convinced! ({self.player.convinced_workers}/4 workers)"
                 else:
-                    self.current_dialogue = f"{coworker.name}: {coworker.dialogue[coworker.trust_level - 1]} ({coworker.trust_level}/3)"
+                    self.current_dialogue = f"{coworker.name}: {random.choice(coworker.dialogue)} ({coworker.trust_level}/3)"
                 break
 
     def update(self):
