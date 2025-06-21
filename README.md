@@ -16,6 +16,9 @@ By UVW Campaign Staff
 Get the latest executable from the [Releases page](https://github.com/skyeknighton/Talk-to-A-Worker/releases/latest).
 
 ## Setup
+Just download the appropriate executable from the Build Cross-Platform workflow!
+
+If you'd rather play within python using the source code, you can!
 1. Install Python 3.8 or higher
 2. Install dependencies:
    ```
