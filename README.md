@@ -13,7 +13,7 @@ By UVW Campaign Staff
 
 ## 📦 Download
 
-Get the latest executable from the [Releases page](https://github.com/your-username/your-repo/releases/latest).
+Get the latest executable from the [Releases page](https://github.com/skyeknighton/Talk-to-A-Worker/releases/latest).
 
 ## Setup
 1. Install Python 3.8 or higher
