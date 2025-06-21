@@ -1,0 +1,68 @@
+name: Build Cross-Platform
+
+on:
+  push:
+    branches: [ main ]
+  release:
+    types: [published]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt pyinstaller
+    - name: Build Windows executable
+      run: |
+        pyinstaller --onefile --windowed --add-data "sprites/*;sprites/" main.py
+    - name: Upload Windows artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Talk-to-A-Worker-Windows
+        path: dist/main.exe
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt pyinstaller
+    - name: Build macOS executable
+      run: |
+        pyinstaller --onefile --windowed --add-data "sprites/*:sprites/" main.py
+    - name: Upload macOS artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Talk-to-A-Worker-macOS
+        path: dist/main
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt pyinstaller
+    - name: Build Linux executable
+      run: |
+        pyinstaller --onefile --windowed --add-data "sprites/*:sprites/" main.py
+    - name: Upload Linux artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Talk-to-A-Worker-Linux
+        path: dist/main 
