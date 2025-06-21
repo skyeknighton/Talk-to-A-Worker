@@ -28,7 +28,7 @@ jobs:
     
     - name: Build executable
       run: |
-        pyinstaller --onefile --windowed --name "TalkToAWorker" --add-data "sprites;sprites" main.py
+        pyinstaller --onefile --windowed --name "TalkToAWorker" --add-data "sprites/background.png;sprites/" --add-data "sprites/boss.png;sprites/" --add-data "sprites/pause.png;sprites/" --add-data "sprites/player.png;sprites/" --add-data "sprites/protestor.png;sprites/" --add-data "sprites/worker.png;sprites/" main.py
     
     - name: Upload artifact
       uses: actions/upload-artifact@v4
