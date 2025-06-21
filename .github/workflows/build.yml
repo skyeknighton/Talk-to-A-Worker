@@ -28,10 +28,10 @@ jobs:
     
     - name: Build executable
       run: |
-        pyinstaller --onefile --windowed --add-data "sprites/*;sprites/" main.py
+        pyinstaller --onefile --windowed --name "TalkToAWorker" --add-data "sprites;sprites" main.py
     
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Talk-to-A-Worker-Executable
-        path: dist/main.exe 
+        name: TalkToAWorker-Executable
+        path: dist/TalkToAWorker.exe 

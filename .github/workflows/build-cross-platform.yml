@@ -20,12 +20,12 @@ jobs:
         pip install -r requirements.txt pyinstaller
     - name: Build Windows executable
       run: |
-        pyinstaller --onefile --windowed --add-data "sprites/*;sprites/" main.py
+        pyinstaller --onefile --windowed --name "TalkToAWorker" --add-data "sprites;sprites" main.py
     - name: Upload Windows artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Talk-to-A-Worker-Windows
-        path: dist/main.exe
+        name: TalkToAWorker-Windows
+        path: dist/TalkToAWorker.exe
 
   build-macos:
     runs-on: macos-latest
@@ -40,12 +40,12 @@ jobs:
         pip install -r requirements.txt pyinstaller
     - name: Build macOS executable
       run: |
-        pyinstaller --onefile --windowed --add-data "sprites/*:sprites/" main.py
+        pyinstaller --onefile --windowed --name "TalkToAWorker" --add-data "sprites:sprites" main.py
     - name: Upload macOS artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Talk-to-A-Worker-macOS
-        path: dist/main
+        name: TalkToAWorker-macOS
+        path: dist/TalkToAWorker
 
   build-linux:
     runs-on: ubuntu-latest
@@ -60,9 +60,9 @@ jobs:
         pip install -r requirements.txt pyinstaller
     - name: Build Linux executable
       run: |
-        pyinstaller --onefile --windowed --add-data "sprites/*:sprites/" main.py
+        pyinstaller --onefile --windowed --name "TalkToAWorker" --add-data "sprites:sprites" main.py
     - name: Upload Linux artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Talk-to-A-Worker-Linux
-        path: dist/main 
+        name: TalkToAWorker-Linux
+        path: dist/TalkToAWorker 
