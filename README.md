@@ -11,6 +11,10 @@ By UVW Campaign Staff
 - Build trust and solidarity with your colleagues
 - Overcome workplace alienation through meaningful interactions
 
+## 📦 Download
+
+Get the latest executable from the [Releases page](https://github.com/your-username/your-repo/releases/latest).
+
 ## Setup
 1. Install Python 3.8 or higher
 2. Install dependencies:
