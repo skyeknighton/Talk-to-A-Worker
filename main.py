@@ -22,11 +22,23 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 
+# PyInstaller resource path function
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    
+    return os.path.join(base_path, relative_path)
+
 # Sprite loading function
 def load_sprite(filename, size=(32, 32)):
     """Load and scale a sprite image, with fallback to colored rectangle"""
     try:
-        sprite_path = os.path.join("sprites", filename)
+        # Use resource_path for PyInstaller compatibility
+        sprite_path = resource_path(os.path.join("sprites", filename))
         if os.path.exists(sprite_path):
             sprite = pygame.image.load(sprite_path)
             return pygame.transform.scale(sprite, size)
@@ -46,7 +58,7 @@ def load_sprite(filename, size=(32, 32)):
             else:
                 surface.fill(GRAY)
             return surface
-    except:
+    except Exception as e:
         # Create fallback colored rectangle
         surface = pygame.Surface(size)
         if "player" in filename:
