@@ -22,7 +22,7 @@ jobs:
       run: |
         pyinstaller --onefile --windowed --add-data "sprites/*;sprites/" main.py
     - name: Upload Windows artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Talk-to-A-Worker-Windows
         path: dist/main.exe
@@ -42,7 +42,7 @@ jobs:
       run: |
         pyinstaller --onefile --windowed --add-data "sprites/*:sprites/" main.py
     - name: Upload macOS artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Talk-to-A-Worker-macOS
         path: dist/main
@@ -62,7 +62,7 @@ jobs:
       run: |
         pyinstaller --onefile --windowed --add-data "sprites/*:sprites/" main.py
     - name: Upload Linux artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Talk-to-A-Worker-Linux
         path: dist/main 
